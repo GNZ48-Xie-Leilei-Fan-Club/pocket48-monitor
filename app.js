@@ -132,17 +132,19 @@ async function sendWebsocketMessage(messages) {
             }
         }
     }
-    for (message of messages) {
-        try {
-            await wsp.open();
-            logger.log({ level: 'info', message: 'Broadcasting message: ' + message });
-            for (fanclub of config.fanclubChatNumber) {
-                wsp.send(JSON.stringify(makePayload(fanclub)));
+    if (messages) {
+        for (message of messages) {
+            try {
+                await wsp.open();
+                logger.log({ level: 'info', message: 'Broadcasting message: ' + message });
+                for (fanclub of config.fanclubChatNumber) {
+                    wsp.send(JSON.stringify(makePayload(fanclub)));
+                }
+            } catch(err) {
+                logger.log({ level: 'error', message: err });
+            } finally {
+                await wsp.close();
             }
-        } catch(err) {
-            logger.log({ level: 'error', message: err });
-        } finally {
-            await wsp.close();
         }
     }
 }
