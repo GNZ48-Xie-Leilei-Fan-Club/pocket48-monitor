@@ -11,7 +11,7 @@ const wsp = new WebSocketAsPromised('ws://localhost:6700', {
 let config = require('./settings');
 
 let token = null;
-let lastMessageTimestamp = 1355603863114;
+let lastMessageTimestamp = Date.now();
 
 const axiosInstance = Axios.create({
     timeout: 3000,
