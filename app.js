@@ -55,7 +55,7 @@ async function getRoomMessages(ownerId, roomId) {
             for (var message of messages) {
                 if (message.msgTime > lastMessageTimestamp) {
                     lastMessageTimestamp = message.msgTime;
-                    sendWebsocketMessage(makeBroadcastPayload(message));
+                    await sendWebsocketMessage(makeBroadcastPayload(message));
                 }
             }
         }
