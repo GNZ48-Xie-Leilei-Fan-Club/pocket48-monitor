@@ -99,7 +99,7 @@ function broadcastTextMessagePayload(message) {
         logger.log({ level: 'error', message: 'Unknown message type.' });
         logger.log({ level: 'error', message: message });
     }
-    return messagePayload
+    return [messagePayload];
 }
 
 function broadcastImageMessagePayload(message) {
@@ -107,7 +107,7 @@ function broadcastImageMessagePayload(message) {
     const body = JSON.parse(message.bodys);
     const { url } = body;
     const { user: { nickName } } = extInfo;
-    return `${nickName}发送了一张图片:\n[CQ:image,file=${url}]`;
+    return [`${nickName}发送了一张图片:\n[CQ:image,file=${url}]`];
 }
 
 function broadcastAudioMessagePayload(message) {
@@ -115,14 +115,14 @@ function broadcastAudioMessagePayload(message) {
     const body = JSON.parse(message.bodys);
     const { url } = body;
     const { user: { nickName } } = extInfo;
-    return `${nickName}发送了语音:\n[CQ:record,file=${url}]`;
+    return [`${nickName}发送了一条语音:`, `[CQ:record,file=${url}]`];
 }
 
 function broadcastExpressMessagePayload(message) {
 
 }
 
-async function sendWebsocketMessage(message) {
+async function sendWebsocketMessage(messages) {
     const makePayload = (groupChatId) => {
         return {
             action: 'send_group_msg',
@@ -132,16 +132,18 @@ async function sendWebsocketMessage(message) {
             }
         }
     }
-    try {
-        await wsp.open();
-        logger.log({ level: 'info', message: 'Broadcasting message: ' + message });
-        for (fanclub of config.fanclubChatNumber) {
-            wsp.send(JSON.stringify(makePayload(fanclub)));
+    for (message of messages) {
+        try {
+            await wsp.open();
+            logger.log({ level: 'info', message: 'Broadcasting message: ' + message });
+            for (fanclub of config.fanclubChatNumber) {
+                wsp.send(JSON.stringify(makePayload(fanclub)));
+            }
+        } catch(err) {
+            logger.log({ level: 'error', message: err });
+        } finally {
+            await wsp.close();
         }
-    } catch(err) {
-        logger.log({ level: 'error', message: err });
-    } finally {
-        await wsp.close();
     }
 }
 
