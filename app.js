@@ -9,6 +9,9 @@ const wsp = new WebSocketAsPromised('ws://localhost:6700', {
 });
 
 let config = require('./settings');
+let SENTRY_DSN_KEY = config.SENNTRY_DSN_KEY;
+const Sentry = require('@sentry/node');
+Sentry.init({ dsn: SENTRY_DSN_KEY });
 
 let token = null;
 let lastMessageTimestamp = Date.now();
@@ -40,6 +43,7 @@ async function login(mobile, password) {
         logger.log({ level: 'info', message: 'logged in with token: ' + token });
     } catch(err) {
         logger.log({ level: 'error', message: err });
+        Sentry.captureException(err);
     }
 }
 
@@ -61,6 +65,7 @@ async function getRoomMessages(ownerId, roomId) {
         }
     } catch(err) {
         logger.log({ level: 'error', message: err });
+        Sentry.captureException(err);
     }
 }
 
@@ -76,6 +81,7 @@ function makeBroadcastPayload(message) {
     } else {
         logger.log({ level: 'error', message: 'Unknown message type.' });
         logger.log({ level: 'error', message: message });
+        Sentry.captureMessage('Unknown message type: ' + message);
         return null;
     }
 }
@@ -142,6 +148,7 @@ async function sendWebsocketMessage(messages) {
                 }
             } catch(err) {
                 logger.log({ level: 'error', message: err });
+                Sentry.captureException(err);
             } finally {
                 await wsp.close();
             }
