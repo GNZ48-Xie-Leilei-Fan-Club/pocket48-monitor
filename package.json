@@ -1,0 +1,17 @@
+{
+  "name": "pocket48-monitor",
+  "version": "0.1.0",
+  "description": "Monitor in real time Pocket48 room messages of SNH Group members.",
+  "main": "app.js",
+  "repository": "https://github.com/adlius/pocket48-monitor.git",
+  "author": "Yuhuai Liu <adlius45@hotmail.com>",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "@sentry/node": "5.6.2",
+    "axios": "^0.18.0",
+    "websocket": "^1.0.28",
+    "websocket-as-promised": "^0.9.0",
+    "winston": "^3.2.1"
+  }
+}
